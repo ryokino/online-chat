@@ -30,7 +30,7 @@ jobs:
         cargo test -p protocol --verbose
 
     - name: Run clippy
-      run: cargo clippy -- --workspace -D warnings
+      run: cargo clippy -- -D warnings
 
     - name: Check formatting
       run: cargo fmt --all --check
