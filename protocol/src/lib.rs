@@ -89,5 +89,3 @@ impl fmt::Display for MessageProtocol {
         write!(f, "<{}>: {}", self.user_name, self.body)
     }
 }
-
-fn main() {}
