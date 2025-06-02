@@ -3,7 +3,8 @@
 //! 実際にソケットを開いて 1 往復だけ確認する。
 //! 失敗するとタイムアウトでテストが落ちるので無限にハングらない。
 
-use crate::{BUFFER_SIZE, SERVER_PORT, handle_client, set_up_server};
+use server::{BUFFER_SIZE, SERVER_PORT, handle_client, set_up_server};
+
 use tokio::{
     task,
     time::{Duration, timeout},
