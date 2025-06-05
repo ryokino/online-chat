@@ -1,6 +1,8 @@
 use std::io;
 use tokio::net::UdpSocket;
 
+pub mod client_manager;
+
 pub const SERVER_ADDRESS: &str = "0.0.0.0";
 pub const SERVER_PORT: u16 = 9001;
 pub const BUFFER_SIZE: usize = 1024;

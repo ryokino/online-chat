@@ -21,3 +21,6 @@ rand = "0.9.1"
 serde = { version = "1.0.219", features = ["derive"] }
 thiserror = "2.0.12"
 tokio = { version = "1.45.1", features = ["full"] }
+dashmap = "6.1.0"
+
+[dependencies]
