@@ -243,7 +243,9 @@ mod client_manager_test {
     #[tokio::test]
     async fn test_background_cleanup_task() {
         // タイムアウトを1秒に設定
-        let manager = Arc::new(ClientManager::new_with_background_cleanup(Duration::from_secs(1)));
+        let manager = Arc::new(ClientManager::new_with_background_cleanup(
+            Duration::from_secs(1),
+        ));
 
         // 過去の時間を last_message_time にセットしたクライアントを作成
         let client = ClientInfo {

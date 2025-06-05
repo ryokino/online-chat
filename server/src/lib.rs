@@ -1,6 +1,6 @@
+use protocol::MessageProtocol;
 use std::{io, sync::Arc};
 use tokio::{net::UdpSocket, time::Instant};
-use protocol::MessageProtocol;
 
 pub mod client_manager;
 use client_manager::{ClientInfo, ClientManager};
