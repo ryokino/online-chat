@@ -30,8 +30,8 @@ mod client_manager_test {
 
     // テスト: 単一クライアント追加
     // 目的: 単一のクライアントを追加して、カウントと格納内容を検証する
-    #[test]
-    fn test_add_single_client_into_client_manager() {
+    #[tokio::test]
+    async fn test_add_single_client_into_client_manager() {
         let manager = ClientManager::new(Duration::from_secs(10));
 
         // クライアント情報を作成
@@ -67,8 +67,8 @@ mod client_manager_test {
 
     // テスト: 複数クライアント同時追加
     // 目的: 複数のクライアントを追加できることを確認し、それぞれが管理されているか検証する
-    #[test]
-    fn test_add_multiple_clients_into_client_manager() {
+    #[tokio::test]
+    async fn test_add_multiple_clients_into_client_manager() {
         let manager = ClientManager::new(Duration::from_secs(10));
 
         // 最初のクライアントを作成
@@ -107,8 +107,8 @@ mod client_manager_test {
 
     // テスト: 既存クライアントの最終活動時間更新
     // 目的: 既に存在するクライアントの last_message_time が更新されることを確認する
-    #[test]
-    fn test_update_existing_client_info() {
+    #[tokio::test]
+    async fn test_update_existing_client_info() {
         let manager = ClientManager::new(Duration::from_secs(10));
 
         // 古い時間を last_message_time にセットしたクライアントを作成
@@ -148,8 +148,8 @@ mod client_manager_test {
 
     // テスト: 存在しないクライアントの更新
     // 目的: クライアントが存在しない場合、エラーが返されることを確認する
-    #[test]
-    fn test_update_nonexistent_client() {
+    #[tokio::test]
+    async fn test_update_nonexistent_client() {
         let manager = ClientManager::new(Duration::from_secs(10));
 
         // 存在しないユーザー名で update_client_activity を呼び出す
@@ -168,8 +168,8 @@ mod client_manager_test {
 
     // テスト: 非アクティブクライアントのクリーンアップ
     // 目的: last_message_time がタイムアウトを超えたクライアントが削除されることを確認する
-    #[test]
-    fn test_cleanup_inactive_clients() {
+    #[tokio::test]
+    async fn test_cleanup_inactive_clients() {
         let manager = ClientManager::new(Duration::from_secs(10));
 
         // 過去の時間を last_message_time にセットしたクライアントを作成
@@ -243,7 +243,7 @@ mod client_manager_test {
     #[tokio::test]
     async fn test_background_cleanup_task() {
         // タイムアウトを1秒に設定
-        let manager = Arc::new(ClientManager::new(Duration::from_secs(1)));
+        let manager = Arc::new(ClientManager::new_with_background_cleanup(Duration::from_secs(1)));
 
         // 過去の時間を last_message_time にセットしたクライアントを作成
         let client = ClientInfo {
