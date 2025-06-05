@@ -1,5 +1,9 @@
-use std::io;
-use tokio::net::UdpSocket;
+use protocol::MessageProtocol;
+use std::{io, sync::Arc};
+use tokio::{net::UdpSocket, time::Instant};
+
+pub mod client_manager;
+use client_manager::{ClientInfo, ClientManager};
 
 pub const SERVER_ADDRESS: &str = "0.0.0.0";
 pub const SERVER_PORT: u16 = 9001;
@@ -24,6 +28,52 @@ pub async fn handle_client(sock: &UdpSocket, buf: &mut [u8; BUFFER_SIZE]) -> io:
     println!("\nReceived message: {message}");
 
     if !message.is_empty() {
+        let sent = sock.send_to(message.as_bytes(), addr).await?;
+        println!("sent {sent} bytes to {addr:?}");
+    }
+    Ok(())
+}
+
+/// Receive one datagram, echo it back, and manage client information.
+pub async fn handle_client_with_manager(
+    sock: &UdpSocket,
+    buf: &mut [u8; BUFFER_SIZE],
+    client_manager: &Arc<ClientManager>,
+) -> io::Result<()> {
+    println!("\nWaiting for a message…");
+
+    let (len, addr) = sock.recv_from(buf).await?;
+    println!("\n{len:?} bytes received from {addr:?}");
+
+    let message = String::from_utf8_lossy(&buf[..len]);
+    println!("\nReceived message: {message}");
+
+    if !message.is_empty() {
+        // プロトコルに従ってメッセージを解析
+        let user_name = match MessageProtocol::deserialize(&buf[..len]) {
+            Ok(msg_protocol) => msg_protocol.user_name,
+            Err(_) => {
+                // プロトコル解析に失敗した場合は従来の方法でフォールバック
+                message
+                    .split_whitespace()
+                    .next()
+                    .unwrap_or("anonymous")
+                    .to_string()
+            }
+        };
+
+        // クライアント情報を作成・更新
+        let client_info = ClientInfo {
+            user_name: user_name.clone(),
+            socket_addr: addr,
+            last_message_time: Instant::now(),
+        };
+
+        // クライアントをテーブルに追加または更新
+        client_manager.upsert_client(client_info);
+        println!("Updated client info for user: {}", user_name);
+
+        // メッセージをエコーバック
         let sent = sock.send_to(message.as_bytes(), addr).await?;
         println!("sent {sent} bytes to {addr:?}");
     }
